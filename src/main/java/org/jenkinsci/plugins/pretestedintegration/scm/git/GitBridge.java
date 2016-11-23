@@ -36,6 +36,7 @@ import org.jenkinsci.plugins.pretestedintegration.IntegrationStrategyDescriptor;
 import org.jenkinsci.plugins.pretestedintegration.PretestedIntegrationBuildWrapper;
 import org.jenkinsci.plugins.pretestedintegration.SCMBridgeDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 /**
  * The Git SCM Bridge.
@@ -67,15 +68,15 @@ public class GitBridge extends AbstractSCMBridge {
      * Constructor for GitBridge.
      * DataBound for use in the UI.
      * @param integrationStrategy The selected IntegrationStrategy
-     * @param branch The Integration Branch name
-     * @param repositoryName The Integration Repository name
+     * @param integrationBranch The Integration Branch name
+     * @param repoName The Integration Repository name
      * @param allowedNoCommits The Integration Repository name
      */
     @DataBoundConstructor
-    public GitBridge(IntegrationStrategy integrationStrategy, final String branch, final String repositoryName, final Integer allowedNoCommits) {
+    public GitBridge(IntegrationStrategy integrationStrategy, String integrationBranch, String repoName, final Integer allowedNoCommits) {
         super(integrationStrategy);
-        this.integrationBranch = branch;
-        this.repoName = repositoryName;
+        this.integrationBranch = integrationBranch;
+        this.repoName = repoName;
         this.allowedNoCommits = allowedNoCommits;
     }
 
@@ -271,7 +272,7 @@ public class GitBridge extends AbstractSCMBridge {
      */
     @Override
     public String createBuildDescription(String triggerBranchName) throws NothingToDoException, UnsupportedConfigurationException, IOException, InterruptedException {
-        return String.format("%s", "(" + getResultInfo() + "):" + triggerBranchName + " -> " + integrationBranch);
+        return String.format("%s", "(" + "REPLACEDME" + "):" + triggerBranchName + " -> " + integrationBranch);
     }
 
 
@@ -360,9 +361,7 @@ public class GitBridge extends AbstractSCMBridge {
 
         Result result = build.getResult();
         if (result != null && result.isBetterOrEqualTo(getRequiredResult())) {
-            setResultInfo("Push");
             pushToIntegrationBranch(build, listener);
-            setResultInfo("CleanUpRemote");
             deleteIntegratedBranch(build, launcher, listener);
         } else {
             LOGGER.log(Level.WARNING, "Build result not satisfied - skipped post-build step.");
@@ -411,6 +410,7 @@ public class GitBridge extends AbstractSCMBridge {
         return this.integrationFailedStatusUnstable;
     }
 
+    @DataBoundSetter
     public void setIntegrationFailedStatusUnstable( boolean integrationFailedStatusUnstable) {
         this.integrationFailedStatusUnstable = integrationFailedStatusUnstable;
     }
@@ -419,13 +419,15 @@ public class GitBridge extends AbstractSCMBridge {
         return this.allowedNoCommits;
     }
 
-    public void setAllowedNoCommits( Integer allowedNoCommits) {
+    @DataBoundSetter
+    public void setAllowedNoCommits(int allowedNoCommits) {
         this.allowedNoCommits = allowedNoCommits;
     }
 
     /**
      * @param repositoryName the repositoryName to set
      */
+    @DataBoundSetter
     public void setRepoName(String repositoryName) {
         this.repoName = repositoryName;
     }
@@ -443,13 +445,6 @@ public class GitBridge extends AbstractSCMBridge {
      */
     @Extension
     public static final class DescriptorImpl extends SCMBridgeDescriptor<GitBridge> {
-
-        /**
-         * Constructor for the Descriptor
-         */
-        public DescriptorImpl() {
-            load();
-        }
 
         /**
         * {@inheritDoc }

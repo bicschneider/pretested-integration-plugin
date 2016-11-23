@@ -68,7 +68,7 @@ public class PretestedIntegrationAsGitPluginExtJobDslExtension extends ContextEx
                 integrationStrategy = new SquashCommitStrategy();
                 break;
         }
-        return new PretestedIntegrationAsGitPluginExt((GitIntegrationStrategy)integrationStrategy, branch, repository);
+        return new PretestedIntegrationAsGitPluginExt(integrationStrategy, branch, repository, Integer.MAX_VALUE);
     }
 
     /**

@@ -79,7 +79,7 @@ public class SquashCommitStrategy extends GitIntegrationStrategy {
             expandedIntegrationBranch = gitbridge.getIntegrationBranch();
         }
 
-        if(tryFastForward(buildData.lastBuild.getSHA1(), listener.getLogger(), client, expandedIntegrationBranch )) return;
+        if(tryFastForward(buildData.lastBuild.getSHA1(), listener.getLogger(), client, gitbridge.getAllowedNoCommits() )) return;
         if(tryRebase(buildData.lastBuild.getSHA1(), client, expandedIntegrationBranch )) return;
 
         try {
@@ -181,7 +181,7 @@ public class SquashCommitStrategy extends GitIntegrationStrategy {
             expandedIntegrationBranch = gitbridge.getIntegrationBranch();
         }
 
-        if(tryFastForward(buildData.lastBuild.getSHA1(), listener.getLogger(), client, expandedIntegrationBranch )) return;
+        if(tryFastForward(buildData.lastBuild.getSHA1(), listener.getLogger(), client, gitbridge.getAllowedNoCommits() )) return;
         if(tryRebase(buildData.lastBuild.getSHA1(), client, expandedIntegrationBranch )) return;
 
         String expandedBranchName;
