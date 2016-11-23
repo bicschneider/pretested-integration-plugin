@@ -9,8 +9,6 @@ import hudson.model.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.pretestedintegration.exceptions.*;
 
@@ -18,13 +16,10 @@ import org.jenkinsci.plugins.pretestedintegration.exceptions.*;
  * Abstract class representing an SCM bridge.
  */
 public abstract class AbstractSCMBridge implements Describable<AbstractSCMBridge>, ExtensionPoint {
-    private static final Logger LOGGER = Logger.getLogger(AbstractSCMBridge.class.getName());
-
 
     /**
      * Information about the result of the integration (Unknown, Conflict, Build, Push).
      */
-    protected String resultInfo = "Unknown";
     protected abstract String getIntegrationBranch();
 
     /**
@@ -217,27 +212,12 @@ public abstract class AbstractSCMBridge implements Describable<AbstractSCMBridge
     }
 
     /**
-     * @return The information of the result of the Phlow
-     */
-    public String getResultInfo() {
-        return resultInfo;
-    }
-
-    /**
-     * @param resultInfo
-     */
-    public void setResultInfo(String resultInfo) {
-        this.resultInfo = resultInfo;
-    }
-
-    /**
      * @param environment environment
      * @return The Integration Branch name as variable expanded if possible - otherwise return integrationBranch
      */
     public String getExpandedIntegrationBranch(EnvVars environment) {
         return environment.expand(getIntegrationBranch());
     }
-
 
     /**
      * @param environment The environment to expand the integrationBranch in
@@ -249,5 +229,9 @@ public abstract class AbstractSCMBridge implements Describable<AbstractSCMBridge
      */
     public Result getRequiredResult() {
         return Result.SUCCESS;
+    }
+
+    void setIntegrationFailedStatusUnstable(boolean integrationFailedStatusUnstable) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

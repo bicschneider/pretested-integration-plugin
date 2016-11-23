@@ -20,9 +20,7 @@ import org.jenkinsci.plugins.pretestedintegration.exceptions.EstablishingWorkspa
 import org.jenkinsci.plugins.pretestedintegration.exceptions.IntegrationFailedException;
 import org.jenkinsci.plugins.pretestedintegration.exceptions.NothingToDoException;
 import org.jenkinsci.plugins.pretestedintegration.exceptions.UnsupportedConfigurationException;
-import org.jenkinsci.plugins.pretestedintegration.scm.git.GitBridge;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
 
 /**
  * The build wrapper determines what will happen before the build will run.
@@ -40,36 +38,19 @@ public class PretestedIntegrationBuildWrapper extends BuildWrapper {
     /**
      * The SCM Bridge used for this project.
      */
-    public final GitBridge scmBridge;
-
+    public final AbstractSCMBridge scmBridge;
     /**
      * Constructor for the Build Wrapper.
      * DataBound to work with Jenkins UI.
      * @param scmBridge the SCM bridge
+     * @param integrationFailedStatusUnstable
+     * @param allowedNoCommits
      */
     @DataBoundConstructor
-    public PretestedIntegrationBuildWrapper(final GitBridge scmBridge) {
+    public PretestedIntegrationBuildWrapper(final AbstractSCMBridge scmBridge) {
         this.scmBridge = scmBridge;
     }
-    @DataBoundSetter
-    public void setIntegrationFailedStatusUnstable(boolean integrationFailedStatusUnstable){
-        this.scmBridge.setIntegrationFailedStatusUnstable(integrationFailedStatusUnstable);
-    }
 
-    public boolean getIntegrationFailedStatusUnstable(){
-        if ( scmBridge == null ) {
-            return false;
-        } else {
-            return scmBridge.getIntegrationFailedStatusUnstable();
-        }
-    }
-    public String getAllowedNoCommits(){
-        if ( scmBridge == null ) {
-            return "";
-        } else {
-            return Integer.toString(scmBridge.getAllowedNoCommits());
-        }
-    }
     public String getIntegrationBranch(){
         if ( scmBridge == null ) {
             return "master";
@@ -143,14 +124,6 @@ public class PretestedIntegrationBuildWrapper extends BuildWrapper {
      */
     @Extension
     public static class DescriptorImpl extends BuildWrapperDescriptor {
-
-        /**
-         * Constructor for the Descriptor
-         */
-        public DescriptorImpl() {
-            load();
-        }
-
         /**
          * {@inheritDoc}
          */
@@ -171,11 +144,13 @@ public class PretestedIntegrationBuildWrapper extends BuildWrapper {
          */
         @Override
         public boolean isApplicable(AbstractProject<?, ?> arg0) {
-            if (arg0 instanceof FreeStyleProject)
+            if (arg0 instanceof FreeStyleProject) {
                 return true;
-            if (arg0 instanceof MatrixProject)
+            } else if (arg0 instanceof MatrixProject) {
                 return true;
-            return false;
+            } else {
+                return false;
+            }
         }
     }
 

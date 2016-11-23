@@ -92,6 +92,7 @@ public abstract class GitIntegrationStrategy extends IntegrationStrategy impleme
      * @param commitId The commit
      * @param logger The logger for console logging
      * @param client The GitClient
+     * @param commitCount
      * @return true if the FF merge was a success, false if the integrationBranch isn't
      * suitable for a FF merge.
      * @throws IntegrationFailedException When commit counting fails

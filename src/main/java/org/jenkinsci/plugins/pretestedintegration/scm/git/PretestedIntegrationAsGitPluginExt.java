@@ -51,8 +51,8 @@ public class PretestedIntegrationAsGitPluginExt extends GitSCMExtension {
      * @param allowedNoCommits The amount of commits allowed for integration
      */
     @DataBoundConstructor
-    public PretestedIntegrationAsGitPluginExt(IntegrationStrategy gitIntegrationStrategy, final String integrationBranch, final String repoName, String allowedNoCommits) {
-        this.gitBridge = new GitBridge(gitIntegrationStrategy,integrationBranch,repoName, Integer.valueOf(allowedNoCommits));
+    public PretestedIntegrationAsGitPluginExt(IntegrationStrategy gitIntegrationStrategy, final String integrationBranch, final String repoName, int allowedNoCommits) {
+        this.gitBridge = new GitBridge(gitIntegrationStrategy,integrationBranch,repoName, allowedNoCommits);
     }
 
     @DataBoundSetter
@@ -140,7 +140,7 @@ public class PretestedIntegrationAsGitPluginExt extends GitSCMExtension {
                 } catch (IOException ex) {
                     LOGGER.log(Level.FINE, "Failed to update build description", ex);
                 }
-                gitBridge.setResultInfo("NothingToDo");
+
                 gitBridge.updateBuildDescription(run);
                 throw new GitException("Nothing to do..");
             } catch (IntegrationFailedException| UnsupportedConfigurationException e) {
@@ -149,7 +149,6 @@ public class PretestedIntegrationAsGitPluginExt extends GitSCMExtension {
                 } else {
                     run.setResult(Result.FAILURE);
                 }
-                gitBridge.setResultInfo("MergeFailed");
                 String logMessage = String.format("%s - decorateRevisionToBuild() - %s - %s", LOG_PREFIX, e.getClass().getSimpleName(), e.getMessage());
                 listener.getLogger().println(logMessage);
                 LOGGER.log(Level.SEVERE, logMessage, e);
@@ -165,14 +164,12 @@ public class PretestedIntegrationAsGitPluginExt extends GitSCMExtension {
                 } else {
                     run.setResult(Result.FAILURE);
                 }
-                gitBridge.setResultInfo("NoCommits");
                 String logMessage = String.format("%s - decorateRevisionToBuild() - %s - %s", LOG_PREFIX, e.getClass().getSimpleName(), e.getMessage());
                 listener.getLogger().println(logMessage);
                 LOGGER.log(Level.SEVERE, logMessage, e);
 
             } catch (IOException e) {
                 run.setResult(Result.FAILURE);
-                gitBridge.setResultInfo("UNKNOWN");
                 gitBridge.updateBuildDescription(run);
                 String logMessage = String.format("%s - Unexpected error. %n%s", LOG_PREFIX, e.getMessage());
                 LOGGER.log(Level.SEVERE, logMessage, e);
@@ -191,7 +188,6 @@ public class PretestedIntegrationAsGitPluginExt extends GitSCMExtension {
 
         if ( run.getResult() == null || run.getResult() == Result.SUCCESS ) {
             Revision mergeRevision = new GitUtils(listener,git).getRevisionForSHA1(git.revParse(HEAD));
-            gitBridge.setResultInfo("Build");
             mergeRevision.getBranches().add(
                     new Branch(gitBridge.getExpandedIntegrationBranch(environment), triggeredRevision.getSha1()));
             return mergeRevision;
