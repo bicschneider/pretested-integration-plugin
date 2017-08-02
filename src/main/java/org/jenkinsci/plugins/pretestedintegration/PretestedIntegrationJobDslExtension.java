@@ -18,7 +18,7 @@ import javaposse.jobdsl.dsl.helpers.publisher.PublisherContext;
  * ```
  * job{
  *   wrappers{
- *   	pretestedIntegration(String integrationStrategy, String branch, String repository)
+ *   	pretestedIntegration(String integrationStrategy, String integrationBranch, String repository)
  *   }
  *   publishers {
  *      pretestedIntegration()
@@ -66,6 +66,7 @@ public class PretestedIntegrationJobDslExtension extends ContextExtensionPoint {
                 integrationStrategy = new SquashCommitStrategy();
                 break;
         }
+
         return new PretestedIntegrationBuildWrapper(new GitBridge(integrationStrategy, branch, repository));
     }
 
