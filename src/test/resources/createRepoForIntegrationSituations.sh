@@ -22,7 +22,7 @@ git push origin -f --mirror
 
 
 #branch_prefixes="FS BW BWSquash Matrix Multijob"
-branch_prefixes="FsExtSq FsExtAcc FsBwAcc FsBwSq MxExtAcc MxExtSq MuExtAcc MuExtSq"
+branch_prefixes="FsExtSq FsExtAcc FsBwAcc FsBwSq MxExtAcc MxExtSq MuExtAcc MuExtSq MuBwAcc"
 # TODO. Add test for pushing to integrationBranch
 
 for branch_prefix in ${branch_prefixes} ; do

@@ -1,10 +1,14 @@
+---
+maintainer:
+ - buep
+---
 # Jenkins Pretested Integration Plugin
 
 In this readme file you find _developer oriented documentation_, about contributing, testing, the architecture and different design decisions.
 
 _User oriented documentation_ is on the [Jenkins community wiki plugin page](https://wiki.jenkins-ci.org/display/JENKINS/Pretested+Integration+Plugin).
 
-The [_roadmap_](https://trello.com/b/tOQL6crl/pretested-integration-plugin) is a  public Trello board. Whil a simple bug, or very simple feature request just can be reported directly on the [Jenkins community issue tracker]( https://issues.jenkins-ci.org/secure/IssueNavigator.jspa?mode=hide&reset=true&jqlQuery=project+%3D+JENKINS+AND+status+in+%28Open%2C+%22In+Progress%22%2C+Reopened%29+AND+component+%3D+%27pretested-integration-plugin%27) you should use the _roadmap_ for discussing new ideas, complicated features and the future of the plugin.
+The [_roadmap_](https://trello.com/b/tOQL6crl/pretested-integration-plugin) is a  public Trello board. While a simple bug, or very simple feature request just can be reported directly on the [Jenkins community issue tracker]( https://issues.jenkins-ci.org/secure/IssueNavigator.jspa?mode=hide&reset=true&jqlQuery=project+%3D+JENKINS+AND+status+in+%28Open%2C+%22In+Progress%22%2C+Reopened%29+AND+component+%3D+%27pretested-integration-plugin%27) you should use the _roadmap_ for discussing new ideas, complicated features and the future of the plugin.
 
 Current development efforts are also maintained Kanban-style on the Trello board.
 
@@ -197,3 +201,6 @@ Code contributions were initially made by Computer Science students at Universit
 ### Sponsors
 
 The plugin is primarily developed for our customer - see the [Pretested Integration Plugin wiki page](https://wiki.jenkins-ci.org/display/JENKINS/Pretested+Integration+Plugin)
+
+### CodeScene analysis data
+[![](https://codescene.io/projects/1346/status.svg) Get more details at **codescene.io**.](https://codescene.io/projects/1346/jobs/latest-successful/results)

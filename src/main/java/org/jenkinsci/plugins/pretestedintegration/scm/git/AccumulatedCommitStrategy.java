@@ -12,6 +12,7 @@ import hudson.plugins.git.GitSCM;
 import hudson.plugins.git.Revision;
 import hudson.plugins.git.util.BuildData;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,7 +65,7 @@ public class AccumulatedCommitStrategy extends GitIntegrationStrategy {
             LOGGER.fine("Found no remote branches.");
             try {
                 LOGGER.fine("Setting build description 'Nothing to do':");
-                build.setDescription("Noting to do");
+                build.setDescription(String.format("Nothing to do"));
             } catch (IOException ex) {
                 LOGGER.log(Level.FINE, "Failed to update build description", ex);
             }
@@ -94,8 +95,8 @@ public class AccumulatedCommitStrategy extends GitIntegrationStrategy {
 
             // Collect author
             listener.getLogger().println(String.format(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Collecting author of last commit on development branch"));
-            commitAuthor = client.withRepository(new FindCommitAuthorCallback( triggerBranch.getSHA1()));
-            logMessage = String.format(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Done colecting last commit author: %s", commitAuthor);
+            commitAuthor = client.withRepository(new FindCommitAuthorCallback(triggerBranch.getSHA1()));
+            logMessage = String.format(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Done collecting last commit author: %s", commitAuthor);
             LOGGER.log(Level.INFO, logMessage);
             listener.getLogger().println(logMessage);
 
@@ -120,7 +121,9 @@ public class AccumulatedCommitStrategy extends GitIntegrationStrategy {
             if ( ex instanceof IntegrationFailedException ) {
                 throw new IntegrationFailedException(ex);
             } else {
-                logMessage = String.format(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Exception while setting up merging. Logging exception msg: %s", ex.getMessage());
+                logMessage = String.format(
+                        PretestedIntegrationBuildWrapper.LOG_PREFIX + "Exception while setting up merging. Logging exception msg: %s",
+                        ex.getMessage());
                 LOGGER.log(Level.SEVERE, logMessage, ex);
                 listener.getLogger().println(logMessage);
                 throw new IntegrationUnknownFailureException(ex);
@@ -141,28 +144,21 @@ public class AccumulatedCommitStrategy extends GitIntegrationStrategy {
             logMessage = String.format(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Commit of accumulated merge done");
             LOGGER.info(logMessage);
             listener.getLogger().println(logMessage);
-        } catch (GitException | InterruptedException gex) {
-            //Git commit failed for some wierd reasone
+        } catch (IOException | GitException | InterruptedException ex) {
+            // A) Git commit failed for some wierd reason
+            // b) If ".git/MERGE_MSG" wasn't found the most likely culrprit is that the merge was an empty
+            //    one (No changes) for some reason the merge() command does not complain or throw exception when that happens
             logMessage = String.format("%sUnable to commit changes. There are two known reasons:\n" +
                     "A) You are trying to integrate a change that was already integrated.\n" +
-                    "B) You have pushed an empty commit( presumably used --allow-empty ) that needed a merge. If you REALLY want the empty commit to me accepted, you can rebase your single empty commit on top of the integration branch. Message was:%n%s", PretestedIntegrationBuildWrapper.LOG_PREFIX, gex.getMessage());
-            LOGGER.log(Level.SEVERE, logMessage, gex);
-            listener.getLogger().println(logMessage);
-            gex.printStackTrace(listener.getLogger());
-            throw new IntegrationUnknownFailureException(gex);
-
-        }  catch (IOException  ex) {
-            // If ".git/MERGE_MSG" wasn't found the most likely culrprit is that the merge was an empty
-            // one (No changes) for some reason the merge() command does not complain or throw exception when that happens
-            logMessage = String.format("%sUnable to commit changes. There are two known reasons:\n" +
-                        "A) You are trying to integrate a change that was already integrated.\n" +
-                        "B) You have pushed an empty commit( presumably used --allow-empty ) that needed a merge. If you REALLY want the empty commit to me accepted, you can rebase your single empty commit on top of the integration branch. Message was:%n%s", PretestedIntegrationBuildWrapper.LOG_PREFIX, ex.getMessage());
+                    "B) You have pushed an empty commit( presumably used --allow-empty ) that needed a merge. \n" +
+                    "   If you REALLY want the empty commit to be accepted, you can rebase your empty commit(s) on top \n" +
+                    "   of the integration branch and it will be fast-forwarded. \n" +
+                    "Message was:%n%s", PretestedIntegrationBuildWrapper.LOG_PREFIX, ex.getMessage());
             LOGGER.log(Level.SEVERE, logMessage, ex);
             listener.getLogger().println(logMessage);
             ex.printStackTrace(listener.getLogger());
             throw new IntegrationUnknownFailureException(ex);
         }
-
         logMessage = String.format(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Commit was successful");
         LOGGER.log(Level.INFO, logMessage);
         listener.getLogger().println(logMessage);

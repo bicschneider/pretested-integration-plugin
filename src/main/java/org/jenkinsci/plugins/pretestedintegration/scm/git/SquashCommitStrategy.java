@@ -83,14 +83,14 @@ public class SquashCommitStrategy extends GitIntegrationStrategy {
                 throw new NothingToDoException(logMessage);
             }
 
-            String commitAuthor;
+            String commitAuthor  = null; //leaving un-assigned, want to fail later if not assigned;
             try {
                 // Collect author
                 logMessage = PretestedIntegrationBuildWrapper.LOG_PREFIX + "Collecting author of last commit on development branch";
                 LOGGER.log(Level.INFO, logMessage);
                 listener.getLogger().println(logMessage);
                 commitAuthor = client.withRepository(new FindCommitAuthorCallback(triggerBranch.getSHA1()));
-                logMessage = String.format(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Done colecting last commit author: %s", commitAuthor);
+                logMessage = String.format(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Done collecting last commit author: %s", commitAuthor);
                 LOGGER.log(Level.INFO, logMessage);
                 listener.getLogger().println(logMessage);
 
@@ -178,9 +178,9 @@ public class SquashCommitStrategy extends GitIntegrationStrategy {
         } catch (IOException | InterruptedException ex) {
             expandedIntegrationBranch = gitbridge.getIntegrationBranch();
         }
-
         doTheIntegration((Run)build, listener, gitbridge, commitId, client, expandedIntegrationBranch, triggerBranch);
     }
+
 
 
     @Override

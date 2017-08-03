@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.pretestedintegration;
 
-import com.tikal.jenkins.plugins.multijob.MultiJobProject;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Plugin;
@@ -148,8 +147,6 @@ public class PretestedIntegrationBuildWrapper extends BuildWrapper {
         @Override
         public boolean isApplicable(AbstractProject<?, ?> arg0) {
             if (arg0 instanceof FreeStyleProject)
-                return true;
-            if (arg0 instanceof MultiJobProject)
                 return true;
             return false;
         }
