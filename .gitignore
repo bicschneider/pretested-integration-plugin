@@ -21,4 +21,4 @@
 # testing #
 /src/test/resources/keys/*
 **/*.git
-test-*/
+/test-*/
