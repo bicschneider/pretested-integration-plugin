@@ -18,6 +18,7 @@ import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.transport.RefSpec;
+import org.jenkinsci.plugins.gitclient.Git;
 import org.jenkinsci.plugins.gitclient.GitClient;
 import org.jenkinsci.plugins.gitclient.MergeCommand;
 import org.jenkinsci.plugins.multiplescms.MultiSCM;
@@ -319,6 +320,13 @@ public class GitBridge extends AbstractSCMBridge {
              * since we will never have ambiguity in remote names
              * because the plugin renames them if they clash.
              */
+            PretestedIntegrationAsGitPluginExt pretestedGitPluginExt = ((GitSCM)project.getScm()).getExtensions().get(PretestedIntegrationAsGitPluginExt.class) ;
+            if ( pretestedGitPluginExt != null ) {
+                 throw new UnsupportedConfigurationException(
+                         "You have configurated Git Phlow Integration as Git Plugin Extension already.\n" +
+                         "It does make sense to have both. Please remove it in the Build Environment section"
+                 );
+            }
             return;
         }
 

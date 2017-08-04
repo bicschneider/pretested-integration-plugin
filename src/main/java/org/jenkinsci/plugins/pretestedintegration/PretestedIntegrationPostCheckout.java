@@ -72,14 +72,6 @@ public class PretestedIntegrationPostCheckout extends Recorder implements Serial
             FreeStyleProject p = (FreeStyleProject) build.getProject();
             PretestedIntegrationBuildWrapper wrapper = p.getBuildWrappersList().get(PretestedIntegrationBuildWrapper.class);
             return wrapper.scmBridge;
-        } else if (proj instanceof MatrixProject) {
-            MatrixProject p = (MatrixProject)proj.getParent();
-            PretestedIntegrationBuildWrapper wrapper = p.getBuildWrappersList().get(PretestedIntegrationBuildWrapper.class);
-            return wrapper.scmBridge;
-        } else if (proj instanceof MultiJobProject ) {
-            MultiJobProject p = (MultiJobProject)proj.getParent();
-            PretestedIntegrationBuildWrapper wrapper = p.getBuildWrappersList().get(PretestedIntegrationBuildWrapper.class);
-            return wrapper.scmBridge;
         } else {
             throw new AbortException("Unsupported job type.");
         }
@@ -131,7 +123,7 @@ public class PretestedIntegrationPostCheckout extends Recorder implements Serial
         } else { /* */
             if (proj instanceof MatrixConfiguration) {
                 listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + "MatrixConfiguration/sub - skipping publisher - leaving it to root job");
-  TODO:              bridge.updateBuildDescription(build, launcher, listener);
+                bridge.updateBuildDescription(build, launcher, listener);
             } else {
                 listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Performing pre-verified post build steps");
                 try {

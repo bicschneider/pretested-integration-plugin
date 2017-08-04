@@ -62,6 +62,7 @@ public class PretestedIntegrationBuildWrapper extends BuildWrapper {
     @Override
     public BuildWrapper.Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener)throws IOException, InterruptedException {
         listener.getLogger().println(String.format("%s Pretested Integration Plugin v%s", LOG_PREFIX, getVersion()));
+
         boolean proceedToBuildStep = true;
         try {
             scmBridge.validateConfiguration(build.getProject());
@@ -70,21 +71,21 @@ public class PretestedIntegrationBuildWrapper extends BuildWrapper {
             scmBridge.prepareWorkspace(build, launcher, listener);
         } catch (NothingToDoException e) {
             build.setResult(Result.NOT_BUILT);
-            String logMessage = LOG_PREFIX + String.format("%s - setUp() - NothingToDoException - %s", LOG_PREFIX, e.getMessage());
+            String logMessage = LOG_PREFIX + String.format("%s ERROR - setUp() - NothingToDoException - %s", LOG_PREFIX, e.getMessage());
             listener.getLogger().println(logMessage);
             LOGGER.log(Level.SEVERE, logMessage, e);
             scmBridge.ensureBranch(build, launcher, listener, scmBridge.getExpandedIntegrationBranch(build.getEnvironment(listener)));
             proceedToBuildStep = false;
         } catch (IntegrationFailedException | EstablishingWorkspaceFailedException | UnsupportedConfigurationException e) {
             build.setResult(Result.FAILURE);
-            String logMessage = String.format("%s - setUp() - %s - %s", LOG_PREFIX, e.getClass().getSimpleName(), e.getMessage());
+            String logMessage = String.format("%s ERROR - setUp() - %s - %s", LOG_PREFIX, e.getClass().getSimpleName(), e.getMessage());
             listener.getLogger().println(logMessage);
             LOGGER.log(Level.SEVERE, logMessage, e);
             scmBridge.ensureBranch(build, launcher, listener, scmBridge.getExpandedIntegrationBranch(build.getEnvironment(listener)));
             proceedToBuildStep = false;
         } catch (IOException | InterruptedException e) {
             build.setResult(Result.FAILURE);
-            String logMessage = String.format("%s - Unexpected error. %n%s", LOG_PREFIX, e.getMessage());
+            String logMessage = String.format("%s - ERROR Unexpected. %n%s", LOG_PREFIX, e.getMessage());
             LOGGER.log(Level.SEVERE, logMessage, e);
             listener.getLogger().println(logMessage);
             e.printStackTrace(listener.getLogger());
