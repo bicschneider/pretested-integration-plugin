@@ -1,12 +1,12 @@
 package org.jenkinsci.plugins.pretestedintegration;
 
-import com.tikal.jenkins.plugins.multijob.MultiJobProject;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.matrix.*;
 import hudson.model.*;
 import hudson.plugins.git.GitSCM;
+import hudson.scm.SCM;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
@@ -45,27 +45,19 @@ public class PretestedIntegrationPostCheckout extends Recorder implements Serial
     private AbstractSCMBridge getScmBridge(AbstractBuild<?, ?> build, BuildListener listener) throws AbortException {
         AbstractProject<?, ?> proj = build.getProject();
 
-        GitSCM client = (GitSCM)build.getProject().getScm();
-        if ( ! ( client instanceof GitSCM ) ) {
+        if ( ! ( build.getProject().getScm() instanceof GitSCM ) ) {
             throw new AbortException("Unsupported SCM type.");
         }
+        GitSCM client = (GitSCM)build.getProject().getScm();
 
         PretestedIntegrationAsGitPluginExt pretestedGitPluginExt = client.getExtensions().get(PretestedIntegrationAsGitPluginExt.class) ;
         if ( pretestedGitPluginExt != null ) {
-            if (proj instanceof FreeStyleProject ) {
-                FreeStyleProject p = (FreeStyleProject) build.getProject();
-                PretestedIntegrationBuildWrapper wrapper = p.getBuildWrappersList().get(PretestedIntegrationBuildWrapper.class);
-                if ( wrapper != null ) {
-                    listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + "BuildWrapper also configured,but skip as GitExtension prevails");
-                }
-            } else if (proj instanceof MultiJobProject ) {
-                MultiJobProject p = (MultiJobProject) build.getProject();
-                PretestedIntegrationBuildWrapper wrapper = p.getBuildWrappersList().get(PretestedIntegrationBuildWrapper.class);
-                if ( wrapper != null ) {
-                    listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + "BuildWrapper also configured, but skip as GitExtension prevails");
-                }
+            GitBridge bridge = pretestedGitPluginExt.getGitBridge();
+            if ( bridge != null ) {
+                return bridge;
+            } else {
+                throw new AbortException("The GitBridge is not defined.. Something weird happend..");
             }
-            return pretestedGitPluginExt.getGitBridge();
         }
 
         if (proj instanceof FreeStyleProject ) {
@@ -90,11 +82,11 @@ public class PretestedIntegrationPostCheckout extends Recorder implements Serial
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         AbstractProject<?, ?> proj = build.getProject();
-        GitSCM client = (GitSCM)build.getProject().getScm();
-        if ( ! (client instanceof GitSCM) ) {
+        if ( ! ( build.getProject().getScm() instanceof GitSCM) ) {
             listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Unsupported SCM type: expects Git");
             return false;
         }
+        GitSCM client = (GitSCM)build.getProject().getScm();
 
         GitBridge bridge = (GitBridge)getScmBridge(build, listener);
 

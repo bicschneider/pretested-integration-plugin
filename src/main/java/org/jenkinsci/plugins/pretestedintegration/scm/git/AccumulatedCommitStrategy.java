@@ -148,11 +148,11 @@ public class AccumulatedCommitStrategy extends GitIntegrationStrategy {
             // A) Git commit failed for some wierd reason
             // b) If ".git/MERGE_MSG" wasn't found the most likely culrprit is that the merge was an empty
             //    one (No changes) for some reason the merge() command does not complain or throw exception when that happens
-            logMessage = String.format("%sUnable to commit changes. There are two known reasons:\n" +
-                    "A) You are trying to integrate a change that was already integrated.\n" +
-                    "B) You have pushed an empty commit( presumably used --allow-empty ) that needed a merge. \n" +
-                    "   If you REALLY want the empty commit to be accepted, you can rebase your empty commit(s) on top \n" +
-                    "   of the integration branch and it will be fast-forwarded. \n" +
+            logMessage = String.format("%sUnable to commit changes. There are two known reasons:%n" +
+                    "A) You are trying to integrate a change that was already integrated.%n" +
+                    "B) You have pushed an empty commit( presumably used --allow-empty ) that needed a merge. %n" +
+                    "   If you REALLY want the empty commit to be accepted, you can rebase your empty commit(s) on top %n" +
+                    "   of the integration branch and it will be fast-forwarded. %n" +
                     "Message was:%n%s", PretestedIntegrationBuildWrapper.LOG_PREFIX, ex.getMessage());
             LOGGER.log(Level.SEVERE, logMessage, ex);
             listener.getLogger().println(logMessage);

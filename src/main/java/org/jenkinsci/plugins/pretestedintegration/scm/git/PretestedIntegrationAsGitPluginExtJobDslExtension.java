@@ -6,7 +6,9 @@ import javaposse.jobdsl.dsl.helpers.publisher.PublisherContext;
 import javaposse.jobdsl.dsl.helpers.wrapper.WrapperContext;
 import javaposse.jobdsl.plugin.ContextExtensionPoint;
 import javaposse.jobdsl.plugin.DslExtensionMethod;
+import org.jenkinsci.plugins.pretestedintegration.AbstractSCMBridge;
 import org.jenkinsci.plugins.pretestedintegration.IntegrationStrategy;
+import org.jenkinsci.plugins.pretestedintegration.IntegrationStrategyDescriptor;
 import org.jenkinsci.plugins.pretestedintegration.PretestedIntegrationPostCheckout;
 
 import java.util.Arrays;
@@ -66,6 +68,9 @@ public class PretestedIntegrationAsGitPluginExtJobDslExtension extends ContextEx
             case "SQUASHED":
                 integrationStrategy = new SquashCommitStrategy();
                 break;
+            default:
+                throw new IllegalArgumentException("Please state an integration strategy.. ");
+
         }
         return new PretestedIntegrationAsGitPluginExt((GitIntegrationStrategy)integrationStrategy, branch, repository );
     }

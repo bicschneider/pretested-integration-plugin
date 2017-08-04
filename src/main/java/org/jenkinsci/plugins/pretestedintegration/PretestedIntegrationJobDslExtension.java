@@ -65,6 +65,8 @@ public class PretestedIntegrationJobDslExtension extends ContextExtensionPoint {
             case "SQUASHED":
                 integrationStrategy = new SquashCommitStrategy();
                 break;
+            default:
+                throw new IllegalArgumentException("Please state an integration strategy.. ");
         }
 
         return new PretestedIntegrationBuildWrapper(new GitBridge(integrationStrategy, branch, repository));

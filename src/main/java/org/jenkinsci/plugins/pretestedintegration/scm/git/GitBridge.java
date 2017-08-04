@@ -177,7 +177,6 @@ public class GitBridge extends AbstractSCMBridge {
      */
     @Override
     public void pushToIntegrationBranch(AbstractBuild<?, ?> build, BuildListener listener) throws PushFailedException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             EnvVars environment = build.getEnvironment(listener);
             String expandedRepo = getExpandedRepository(environment);
@@ -189,12 +188,11 @@ public class GitBridge extends AbstractSCMBridge {
         } catch (IOException | InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "Failed to push changes to integration branch. Exception:", ex);
             listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + String.format("Failed to push changes to integration branch. Exception %s", ex));
-            throw new PushFailedException(String.format("Failed to push changes to integration branch, message was:%n%s", output.toString()));
+            throw new PushFailedException(String.format("Failed to push changes to integration branch, message was:%n%s", ex));
         }
     }
-
+// TODO: Remove - related to branch context PoC
     public void pushToIntegrationBranchGit(Run<?, ?> run, TaskListener listener, GitClient client) throws PushFailedException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             EnvVars environment = run.getEnvironment(listener);
             String expandedRepo = getExpandedRepository(environment);
@@ -204,12 +202,11 @@ public class GitBridge extends AbstractSCMBridge {
         } catch (IOException | InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "Failed to push changes to integration branch. Exception:", ex);
             listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + String.format("Failed to push changes to integration branch. Exception %s", ex));
-            throw new PushFailedException(String.format("Failed to push changes to integration branch, message was:%n%s", output.toString()));
+            throw new PushFailedException(String.format("Failed to push changes to integration branch, message was:%n%s", ex));
         }
     }
 
     public void pushToBranch( TaskListener listener, GitClient client, String branchToPush, String expandedRepo  ) throws PushFailedException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             LOGGER.log(Level.INFO, "Pushing changes to: " + branchToPush );
             listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + "Pushing changes to integration branch:");
@@ -219,7 +216,7 @@ public class GitBridge extends AbstractSCMBridge {
         } catch ( InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "Failed to push changes to: " + branchToPush +".\nException:", ex);
             listener.getLogger().println(PretestedIntegrationBuildWrapper.LOG_PREFIX + String.format("Failed to push changes to: " + branchToPush + ".\nException: %s", ex));
-            throw new PushFailedException(String.format("Failed to push changes to integration branch, message was:%n%s", output.toString()));
+            throw new PushFailedException(String.format("Failed to push changes to integration branch, message was:%n%s", ex));
         }
     }
 
@@ -276,7 +273,7 @@ public class GitBridge extends AbstractSCMBridge {
             }
             String finalDescription;
             if (!StringUtils.isBlank(build.getDescription())) {
-                finalDescription = String.format("%s\n%s",
+                finalDescription = String.format("%s%n%s",
                         build.getDescription(),
                         triggerBranch.getName() + postfixText );
             } else {
